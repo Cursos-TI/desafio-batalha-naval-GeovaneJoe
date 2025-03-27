@@ -21,6 +21,60 @@ void exibirTabuleiro(int tabuleiro[TAM_TABULEIRO][TAM_TABULEIRO]) {
     }
 }
 
+// Função para verificar se a posição é válida (não fora do tabuleiro ou sobreposição)
+int verificarPosicaoValida(int tabuleiro[TAM_TABULEIRO][TAM_TABULEIRO], int linha, int coluna, int direcao, int tamanho) {
+   
+    // Direção 0 = Horizontal, 1 = Vertical, 2 = Diagonal principal, 3 = Diagonal inversa
+    for (int i = 0; i < tamanho; i++) {
+        int x = linha;
+        int y = coluna;
+
+        if (direcao == 0) {
+            y += i;  // Horizontal
+        } else if (direcao == 1) {
+            x += i;  // Vertical
+        } else if (direcao == 2) {
+            x += i;
+            y += i;  // Diagonal principal
+        } else if (direcao == 3) {
+            x += i;
+            y -= i;  // Diagonal inversa
+        }
+
+        // Verificar se está fora do tabuleiro ou se já tem um navio na posição
+        if (x < 0 || x >= TAM_TABULEIRO || y < 0 || y >= TAM_TABULEIRO || tabuleiro[x][y] == 3) {
+            return 0;  // Posição inválida
+        }
+    }
+    return 1;  // Posição válida
+}
+
+// Função para posicionar um navio no tabuleiro
+void posicionarNavio(int tabuleiro[TAM_TABULEIRO][TAM_TABULEIRO], int linha, int coluna, int direcao, int tamanho) {
+    if (verificarPosicaoValida(tabuleiro, linha, coluna, direcao, tamanho)) {
+        for (int i = 0; i < tamanho; i++) {
+            int x = linha;
+            int y = coluna;
+
+            if (direcao == 0) {
+                y += i;  // Horizontal
+            } else if (direcao == 1) {
+                x += i;  // Vertical
+            } else if (direcao == 2) {
+                x += i;
+                y += i;  // Diagonal principal
+            } else if (direcao == 3) {
+                x += i;
+                y -= i;  // Diagonal inversa
+            }
+
+            tabuleiro[x][y] = 3;  // Marca a posição do navio
+        }
+    } else {
+        printf("Posição inválida para o navio!\n");
+    }
+}
+
 int main() {
     // Inicializa o tabuleiro com 0 (água)
     int tabuleiro[TAM_TABULEIRO][TAM_TABULEIRO] = {0};
@@ -34,15 +88,19 @@ int main() {
     int linhaVertical = 6;
     int colunaVertical = 5;
 
-    // Posicionar o navio horizontal
-    for (int i = 0; i < TAM_NAVIO; i++) {
-        tabuleiro[linhaHorizontal][colunaHorizontal + i] = 3;
-    }
+    // Navio diagonal principal: começa na linha 0, coluna 0
+    int linhaDiagonalPrincipal = 0;
+    int colunaDiagonalPrincipal = 0;
 
-    // Posicionar o navio vertical
-    for (int i = 0; i < TAM_NAVIO; i++) {
-        tabuleiro[linhaVertical + i][colunaVertical] = 3;
-    }
+    // Navio diagonal inversa: começa na linha 0, coluna 9
+    int linhaDiagonalInversa = 0;
+    int colunaDiagonalInversa = 9;
+
+    // Posicionar os navios
+    posicionarNavio(tabuleiro, linhaHorizontal, colunaHorizontal, 0, TAM_NAVIO); // Horizontal
+    posicionarNavio(tabuleiro, linhaVertical, colunaVertical, 1, TAM_NAVIO);     // Vertical
+    posicionarNavio(tabuleiro, linhaDiagonalPrincipal, colunaDiagonalPrincipal, 2, TAM_NAVIO); // Diagonal Principal
+    posicionarNavio(tabuleiro, linhaDiagonalInversa, colunaDiagonalInversa, 3, TAM_NAVIO);   // Diagonal Inversa
 
     // Exibir o tabuleiro
     exibirTabuleiro(tabuleiro);
